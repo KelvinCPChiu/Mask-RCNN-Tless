@@ -3,16 +3,26 @@
 This is the implementation based on Mask-RCNN for Tless dataset.
 
 Modification : 
+
 ./data/datasets/__init__.py
+
 ./data/datasets/build.py
+
 ./data/datasets/evaluation/__init__.py
+
 ./data/transforms/__init__.py
+
 ./data/transforms/transforms.py
+
 ./data/transforms/build.py
+
 ./config/defaults.py
+
 ./config/path_catalog.py
 
+
 Add: 
+
 ./demo/predictor_nms.py                  -- based on original predictor.py, added NMS over the predictions
 
 ./Demo_COCO .py                             -- demo python file without Jupyter Notebook. To be renamed.
