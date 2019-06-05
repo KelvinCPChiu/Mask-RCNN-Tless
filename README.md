@@ -1,4 +1,4 @@
-# Faster R-CNN and Mask R-CNN in PyTorch 1.0
+# Faster R-CNN and Mask R-CNN in PyTorch 1.0 for Tless
 
 This is the implementation based on Mask-RCNN for Tless dataset.
 
