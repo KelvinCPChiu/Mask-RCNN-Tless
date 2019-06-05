@@ -2,7 +2,7 @@
 import cv2
 import torch
 from torchvision import transforms as T
-from torchvision.transforms import functional as F
+
 from maskrcnn_benchmark.modeling.detector import build_detection_model
 from maskrcnn_benchmark.utils.checkpoint import DetectronCheckpointer
 from maskrcnn_benchmark.structures.image_list import to_image_list
@@ -10,72 +10,80 @@ from maskrcnn_benchmark.modeling.roi_heads.mask_head.inference import Masker
 from maskrcnn_benchmark import layers as L
 from maskrcnn_benchmark.utils import cv2_util
 
-class Resize(object):
-    def __init__(self, min_size, max_size):
-        self.min_size = min_size
-        self.max_size = max_size
 
-    # modified from torchvision to add support for max size
-    def get_size(self, image_size):
-        w, h = image_size
-        size = self.min_size
-        max_size = self.max_size
-        if max_size is not None:
-            min_original_size = float(min((w, h)))
-            max_original_size = float(max((w, h)))
-            if max_original_size / min_original_size * size > max_size:
-                size = int(round(max_size * min_original_size / max_original_size))
-
-        if (w <= h and w == size) or (h <= w and h == size):
-            return (h, w)
-
-        if w < h:
-            ow = size
-            oh = int(size * h / w)
-        else:
-            oh = size
-            ow = int(size * w / h)
-
-        return (oh, ow)
-
-    def __call__(self, image):
-        size = self.get_size(image.size)
-        image = F.resize(image, size)
-        return image
+# Modified COCO
 class COCODemo(object):
     # COCO categories for pretty print
+    # Resize the last layer for class / block those beyoud
+    # note, we should check the obj id that it will not mixed with the bg
+    # or get the bg from the coco dataset
+
     CATEGORIES = [
         "__background",
-        "person",
-        "bicycle",
-        "car",
-        "motorcycle",
-        "airplane",
-        "bus",
-        "train",
-        "truck",
-        "boat",
-        "traffic light",
-        "fire hydrant",
-        "stop sign",
-        "parking meter",
-        "bench",
-        "bird",
-        "cat",
-        "dog",
-        "horse",
-        "sheep",
-        "cow",
-        "elephant",
-        "bear",
-        "zebra",
-        "giraffe",
-        "backpack",
-        "umbrella",
-        "handbag",
-        "tie",
-        "suitcase",
-        "frisbee",
+        "Object 1",
+        "Object 2",
+        "Object 3",
+        "Object 4",
+        "Object 5",
+        "Object 6",
+        "Object 7",
+        "Object 8",
+        "Object 9",
+        "Object 10",
+        "Object 11",
+        "Object 12",
+        "Object 13",
+        "Object 14",
+        "Object 15",
+        "Object 16",
+        "Object 17",
+        "Object 18",
+        "Object 19",
+        "Object 20",
+        "Object 21",
+        "Object 22",
+        "Object 23",
+        "Object 24",
+        "Object 25",
+        "Object 26",
+        "Object 27",
+        "Object 28",
+        "Object 29",
+        "Object 30",
+    ]
+
+    CATEGORIES = [
+        "__background",
+        "Object 1",
+        "Object 2",
+        "Object 3",
+        "Object 4",
+        "Object 5",
+        "Object 6",
+        "Object 7",
+        "Object 8",
+        "Object 9",
+        "Object 10",
+        "Object 11",
+        "Object 12",
+        "Object 13",
+        "Object 14",
+        "Object 15",
+        "Object 16",
+        "Object 17",
+        "Object 18",
+        "Object 19",
+        "Object 20",
+        "Object 21",
+        "Object 22",
+        "Object 23",
+        "Object 24",
+        "Object 25",
+        "Object 26",
+        "Object 27",
+        "Object 28",
+        "Object 29",
+        "Object 30",
         "skis",
         "snowboard",
         "sports ball",
@@ -134,19 +142,27 @@ class COCODemo(object):
         confidence_threshold=0.7,
         show_mask_heatmaps=False,
         masks_per_dim=2,
-        min_image_size=224,
+        min_image_size=224, load_weight=None
     ):
         self.cfg = cfg.clone()
         self.model = build_detection_model(cfg)
         self.model.eval()
+
         self.device = torch.device(cfg.MODEL.DEVICE)
+
         self.model.to(self.device)
         self.min_image_size = min_image_size
 
         save_dir = cfg.OUTPUT_DIR
         checkpointer = DetectronCheckpointer(cfg, self.model, save_dir=save_dir)
+
         _ = checkpointer.load(cfg.MODEL.WEIGHT)
 
+        if load_weight:
+            saved_model = torch.load(load_weight)
+            print('Loaded trained model weight.')
+            _ = checkpointer._load_model(saved_model)
+        
         self.transforms = self.build_transform()
 
         mask_threshold = -1 if show_mask_heatmaps else 0.5
@@ -178,12 +194,11 @@ class COCODemo(object):
         normalize_transform = T.Normalize(
             mean=cfg.INPUT.PIXEL_MEAN, std=cfg.INPUT.PIXEL_STD
         )
-        min_size = cfg.INPUT.MIN_SIZE_TEST
-        max_size = cfg.INPUT.MAX_SIZE_TEST
+
         transform = T.Compose(
             [
                 T.ToPILImage(),
-                Resize(min_size, max_size),
+                T.Resize(self.min_image_size),
                 T.ToTensor(),
                 to_bgr_transform,
                 normalize_transform,
@@ -203,7 +218,7 @@ class COCODemo(object):
         """
         predictions = self.compute_prediction(image)
         top_predictions = self.select_top_predictions(predictions)
-
+        print(predictions.bbox.shape)
         result = image.copy()
         if self.show_mask_heatmaps:
             return self.create_mask_montage(result, top_predictions)
