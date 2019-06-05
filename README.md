@@ -41,11 +41,9 @@ Run the following command to train the network for tless.
 
 Note the dataset evaluation function is still implementating. Error will occur after testing prediction.
 
+For demo, please use the jupyter notebook of Mask_R-CNN_CPU.ipynb.
 
-For demo, please use the jupyter notebook of Mask_R-CNN_CPU.ipynb. Modifying the saved weight model location in COCO_Demo() function.
-
-
-The datasets directory should used in the following format.
+The datasets directory should use the following format,
 
     -datasets 
     |-coco
