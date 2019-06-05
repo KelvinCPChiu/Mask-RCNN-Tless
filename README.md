@@ -38,7 +38,7 @@ Note the dataset evaluation function is still implementating. Error will occur a
 
 The datasets directory should used in the following format.
 
--datasets
+-datasets \n
 |-coco
 |-tless
     |-background                   : background dataset for small dataset augmentation.
