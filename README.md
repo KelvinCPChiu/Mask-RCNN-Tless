@@ -1,6 +1,6 @@
 # Faster R-CNN and Mask R-CNN in PyTorch 1.0
 
-This is the implementation based on Mask-RCNN for Tless dataset. The major
+This is the implementation based on Mask-RCNN for Tless dataset.
 
 Modification : 
 ./data/datasets/__init__.py
@@ -13,9 +13,9 @@ Modification :
 ./config/path_catalog.py
 
 Add: 
-./demo/predictor_nms.py                  -- added NMS over the predictions
+./demo/predictor_nms.py                  -- based on original predictor.py, added NMS over the predictions
 
-./Demo_COCO                              -- demo python file without Jupyter Notebook. To be renamed.
+./Demo_COCO .py                             -- demo python file without Jupyter Notebook. To be renamed.
 
 ./Mask_R-CNN/CPU.ipynb                   -- Modification based on Mask_R-CNN_Demo, added the weight loading function for trained model.
 
