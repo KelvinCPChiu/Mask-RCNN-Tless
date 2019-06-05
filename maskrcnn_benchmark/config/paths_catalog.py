@@ -103,17 +103,32 @@ class DatasetCatalog(object):
         "cityscapes_fine_instanceonly_seg_test_cocostyle": {
             "img_dir": "cityscapes/images",
             "ann_file": "cityscapes/annotations/instancesonly_filtered_gtFine_test.json"
-        }
+        },
+        "tless_train_datasetv2": {
+            "data_dir": "tless",
+            "train": "train",
+            "cam": "primesense",
+            "set_idx": [1, 30]},
+        "tless_test_datasetv2": {
+            "data_dir": "tless",
+            "train": "test",
+            "cam": "primesense",
+            "set_idx": [1, 20]
+         }
     }
+#Extra data need to be added here
 
     @staticmethod
     def get(name):
         if "coco" in name:
             data_dir = DatasetCatalog.DATA_DIR
+            # For example, the name is "coco_2017_train"
             attrs = DatasetCatalog.DATASETS[name]
             args = dict(
                 root=os.path.join(data_dir, attrs["img_dir"]),
+                # in the path_catalog, the image directory is giving in ["img_dir"]
                 ann_file=os.path.join(data_dir, attrs["ann_file"]),
+                # similar for the annotation file
             )
             return dict(
                 factory="COCODataset",
@@ -130,7 +145,22 @@ class DatasetCatalog(object):
                 factory="PascalVOCDataset",
                 args=args,
             )
-        raise RuntimeError("Dataset not available: {}".format(name))
+        elif "tless" in name:
+            data_dir = DatasetCatalog.DATA_DIR
+            # For example, the name is "coco_2017_train"
+            attrs = DatasetCatalog.DATASETS[name]
+            path_name = '{}/{}_{}/'.format(attrs["data_dir"],
+                                           attrs["train"],
+                                           attrs["cam"])
+            args = dict(data_dir=os.path.join(data_dir, path_name),
+                        set_idx=attrs['set_idx'])
+            return dict(
+                factory="concat_tless",
+                args=args,
+            )
+
+        ## Need to add a get function for self defined dataset here.
+        raise RuntimeError("Datasets not available: {}".format(name))
 
 
 class ModelCatalog(object):
