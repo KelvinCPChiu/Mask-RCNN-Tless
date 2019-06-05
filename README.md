@@ -36,12 +36,15 @@ python tools/train_net.py --config-file "configs/caffe2/e2e_mask_rcnn_R_50_FPN_1
 Note the dataset evaluation function is still implementating. Error will occur after testing prediction.
 
 
+For demo, please use the jupyter notebook of Mask_R-CNN_CPU.ipynb. Modifying the saved weight model location in COCO_Demo() function.
+
+
 The datasets directory should used in the following format.
 
--datasets \n
-|-coco
-|-tless
-    |-background                   : background dataset for small dataset augmentation.
-    |-test_primesense               
-    |-train_primesense
-    |-result                       : saving directory for demo.
+    -datasets 
+    |-coco
+    |-tless
+        |-background                   : background dataset for small dataset augmentation.
+        |-test_primesense               
+        |-train_primesense
+        |-result                       : saving directory for demo.
