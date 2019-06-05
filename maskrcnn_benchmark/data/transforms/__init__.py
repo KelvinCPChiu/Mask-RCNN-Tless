@@ -4,5 +4,6 @@ from .transforms import Resize
 from .transforms import RandomHorizontalFlip
 from .transforms import ToTensor
 from .transforms import Normalize
+from .transforms import change_bg_rescale
 
 from .build import build_transforms

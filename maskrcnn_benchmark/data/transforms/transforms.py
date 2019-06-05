@@ -4,7 +4,11 @@ import random
 import torch
 import torchvision
 from torchvision.transforms import functional as F
-
+#import os
+#from PIL.Image import open as open_img
+from maskrcnn_benchmark.structures.bounding_box import BoxList
+from MaskRCNN_Dataset import change_bg as change_bg
+from MaskRCNN_Dataset import change_bg_rescale as change_bg_rescale
 
 class Compose(object):
     def __init__(self, transforms):
@@ -22,6 +26,17 @@ class Compose(object):
             format_string += "    {0}".format(t)
         format_string += "\n)"
         return format_string
+
+
+class RandomHorizontalFlip(object):
+    def __init__(self, prob=0.5):
+        self.prob = prob
+
+    def __call__(self, image, target):
+        if random.random() < self.prob:
+            image = F.hflip(image)
+            target = target.transpose(0)
+        return image, target
 
 
 class Resize(object):
@@ -54,34 +69,12 @@ class Resize(object):
 
         return (oh, ow)
 
-    def __call__(self, image, target=None):
+    def __call__(self, image, target):
         size = self.get_size(image.size)
         image = F.resize(image, size)
-        if target is None:
-            return image
         target = target.resize(image.size)
         return image, target
 
-
-class RandomHorizontalFlip(object):
-    def __init__(self, prob=0.5):
-        self.prob = prob
-
-    def __call__(self, image, target):
-        if random.random() < self.prob:
-            image = F.hflip(image)
-            target = target.transpose(0)
-        return image, target
-
-class RandomVerticalFlip(object):
-    def __init__(self, prob=0.5):
-        self.prob = prob
-
-    def __call__(self, image, target):
-        if random.random() < self.prob:
-            image = F.vflip(image)
-            target = target.transpose(1)
-        return image, target
 
 class ColorJitter(object):
     def __init__(self,
@@ -103,6 +96,7 @@ class ColorJitter(object):
 
 class ToTensor(object):
     def __call__(self, image, target):
+
         return F.to_tensor(image), target
 
 
@@ -112,10 +106,23 @@ class Normalize(object):
         self.std = std
         self.to_bgr255 = to_bgr255
 
-    def __call__(self, image, target=None):
+    def __call__(self, image, target):
+
         if self.to_bgr255:
             image = image[[2, 1, 0]] * 255
         image = F.normalize(image, mean=self.mean, std=self.std)
-        if target is None:
-            return image
         return image, target
+
+
+#class change_bg(change_bg_):
+
+#    def __init__(self, data_dir):
+#        super(change_bg, self).__init__(data_dir=data_dir)
+#        super(change_bg, self)
+
+
+#class change_bg_rescale(change_bg_rescale_):
+
+#    def __init__(self, data_dir):
+#        super(change_bg_rescale, self).__init__(data_dir=data_dir)
+#        super(change_bg_rescale, self)
