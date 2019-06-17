@@ -34,6 +34,7 @@ Add:
     ./Demo_COCO .py                             -- demo python file without Jupyter Notebook. To be renamed.
 
     ./Mask_R-CNN_CPU.ipynb                   -- Modification based on Mask_R-CNN_Demo, added the weight loading function for trained model.
+    
     ./MaskRCNN_Dataset.py                    --Dataloader, Mask generator, augmentation .
 
 Run the following command to train the network for tless. 
